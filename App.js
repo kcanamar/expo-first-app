@@ -8,6 +8,8 @@ import * as ImagePicker from 'expo-image-picker'
 import IconButton from './components/IconButton';
 import CircleButton from './components/CircleButton';
 import EmojiPicker from './components/EmojiPicker';
+import EmojiList from './components/EmojiList';
+import EmojiSticker from './components/EmojiSticker';
 
 const PlaceholderImage = require("./assets/images/background-image.png")
 
@@ -15,6 +17,8 @@ export default function App() {
   const [selectedImage, setSelectedImage] = useState(null)
   const [isModalVisable, setIsModalVisible] = useState(false)
   const [showAppOptions, setShowAppOptions] = useState(false);
+  const [pickedEmoji, setPickedEmoji] = useState(null)
+
   const pickImageAsync = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
@@ -51,6 +55,7 @@ export default function App() {
     <View style={styles.container}>
       <View style={styles.imageContainer}> 
         <ImageViewer placeholderImageSource={PlaceholderImage} selectedImage={selectedImage}/>
+        {pickedEmoji !== null ? <EmojiSticker imageSize={40} stickerSource={pickedEmoji} /> : null}
       </View>
       {showAppOptions ? (
         <View style={styles.optionsContainer}>
@@ -67,7 +72,7 @@ export default function App() {
         </View>
       )}
       <EmojiPicker isVisible={isModalVisable} onClose={onModalclose}>
-
+          <EmojiList onSelect={setPickedEmoji} onCloseModal={onModalclose} />
       </EmojiPicker>
       <StatusBar style="auto" />
     </View>
