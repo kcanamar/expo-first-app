@@ -3,7 +3,6 @@ import { FontAwesome } from '@expo/vector-icons'
 
 export default function Button({ label, theme, onPress }) {
 
-    console.log({label, theme, onPress})
     if (theme === "primary") {
       return <View
             style={[styles.buttonContainer, { borderWidth: 4, borderColor: "#ffd33d", borderRadius: 18 }]}
