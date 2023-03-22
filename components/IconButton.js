@@ -12,11 +12,11 @@ export default function IconButton({ icon, label, onPress }) {
 
 const styles = StyleSheet.create({
     iconButton: {
-        justifyContent: 'center',
-        alignItems: 'center',
+      justifyContent: 'center',
+      alignItems: 'center',
     },
     iconButtonLabel: {
-        color: '#fff',
-        marginTop: 12,
-    }
-})
+      color: '#fff',
+      marginTop: 12,
+    },
+  });

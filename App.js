@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View } from 'react-native';
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import Button from "./components/Button";
 import ImageViewer from './components/ImageViewer';
@@ -10,6 +10,8 @@ import CircleButton from './components/CircleButton';
 import EmojiPicker from './components/EmojiPicker';
 import EmojiList from './components/EmojiList';
 import EmojiSticker from './components/EmojiSticker';
+import * as MediaLibrary from 'expo-media-library';
+import { captureRef } from 'react-native-view-shot';
 
 const PlaceholderImage = require("./assets/images/background-image.png")
 
@@ -18,6 +20,13 @@ export default function App() {
   const [isModalVisable, setIsModalVisible] = useState(false)
   const [showAppOptions, setShowAppOptions] = useState(false);
   const [pickedEmoji, setPickedEmoji] = useState(null)
+  
+  const [status, requestPremission] = MediaLibrary.usePermissions()
+  const imageRef = useRef();
+
+  if (status === null) {
+    requestPremission();
+  }
 
   const pickImageAsync = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -33,7 +42,6 @@ export default function App() {
     }
   }
 
-
   const onReset = () => {
     setShowAppOptions(false)
   }
@@ -47,14 +55,28 @@ export default function App() {
   }
 
   const onSaveImageAsync = async () => {
+    try {
+      const localUri = await captureRef(imageRef, {
+        height: 440,
+        quality: 1,
+      })
 
+      await MediaLibrary.saveToLibraryAsync(localUri);
+
+      if(localUri) {
+        alert("Saved!")
+      }
+
+    } catch (error) {
+      console.log(error)
+    }
   }
 
 
   return (
     <GestureHandlerRootView style={styles.container}>
-      <View style={styles.container}>
-        <View style={styles.imageContainer}>
+      <View style={styles.imageContainer}>
+        <View ref={imageRef} collapsable={false}>
           <ImageViewer placeholderImageSource={PlaceholderImage} selectedImage={selectedImage}/>
           {pickedEmoji !== null ? <EmojiSticker imageSize={40} stickerSource={pickedEmoji} /> : null}
         </View>
@@ -88,8 +110,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   imageContainer: {
-    flex: 1,
+    flex:1, 
     paddingTop: 58,
+    alignItems: 'center',
   },
   footerContainer: {
     flex: 1 / 3,
@@ -97,10 +120,11 @@ const styles = StyleSheet.create({
   },
   optionsContainer: {
     position: 'absolute',
-    bottom: 50,
+    bottom: 80,
   },
   optionsRow: {
     alignItems: 'center',
     flexDirection: 'row',
-  },
+    justifyContent: 'center',
+  },  
 });
